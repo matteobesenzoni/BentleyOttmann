@@ -140,33 +140,37 @@ public class BentleyOttmann {
                 segments.remove(s);
                 break;
             case INTERSECTION:
-                Segment s1 = e.getSegments().get(0);
-                Segment s2 = e.getSegments().get(1);
-                swap(s1, s2);
-                if (s1.getY() < s2.getY()) {
-                    lower = segments.lower(s2);
-                    higher = segments.higher(s1);
-                    if (lower != null) {
-                        n_int += checkIntersection(lower, s2, x);
-                        removeFutureEvent(lower, s1);
+                if (e.getSegments().size() == 2) {
+                    Segment s1 = e.getSegments().get(0);
+                    Segment s2 = e.getSegments().get(1);
+                    swap(s1, s2);
+                    if (s1.getY() < s2.getY()) {
+                        lower = segments.lower(s2);
+                        higher = segments.higher(s1);
+                        if (lower != null) {
+                            n_int += checkIntersection(lower, s2, x);
+                            removeFutureEvent(lower, s1);
+                        }
+                        if (higher != null) {
+                            n_int += checkIntersection(higher, s1, x);
+                            removeFutureEvent(higher, s2);
+                        }
+                    } else {
+                        lower = segments.lower(s1);
+                        higher = segments.higher(s2);
+                        if (lower != null) {
+                            n_int += checkIntersection(lower, s1, x);
+                            removeFutureEvent(lower, s2);
+                        }
+                        if (higher != null) {
+                            n_int += checkIntersection(higher, s2, x);
+                            removeFutureEvent(higher, s1);
+                        }
                     }
-                    if (higher != null) {
-                        n_int += checkIntersection(higher, s1, x);
-                        removeFutureEvent(higher, s2);
-                    }
+                    intersections.add(e.getPoint());
                 } else {
-                    lower = segments.lower(s1);
-                    higher = segments.higher(s2);
-                    if (lower != null) {
-                        n_int += checkIntersection(lower, s1, x);
-                        removeFutureEvent(lower, s2);
-                    }
-                    if (higher != null) {
-                        n_int += checkIntersection(higher, s2, x);
-                        removeFutureEvent(higher, s1);
-                    }
+                    // TODO: implement multi-event
                 }
-                intersections.add(e.getPoint());
                 break;
         }
 
@@ -216,7 +220,7 @@ public class BentleyOttmann {
     private void run() {
         while (!events.isEmpty())
             step(false);
-        System.out.println(String.format("summary: %d segment" + (startingSegments > 1 ? "s" : "") + ", %d intersection" + (intersections.size() > 1 ? "s" : ""), startingSegments, intersections.size()));
+        System.out.println(String.format("summary: %d segments, %d intersections", startingSegments, intersections.size()));
     }
 
     /**
