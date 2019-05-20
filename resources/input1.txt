@@ -20,5 +20,3 @@ step -p
 step -p
 step -p
 step -p
-step -p
-step -p

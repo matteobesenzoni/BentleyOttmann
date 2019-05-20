@@ -10,12 +10,13 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NavigableSet;
+import java.util.Queue;
 
 public class StatusPanel extends JPanel {
 
-    private static final int WIDTH = GraphPanel.SIZE;
-    private static final int HEIGHT = 49;
-    private static final int LEFT_PADDING = 5;
+    private static final int WIDTH = 200;
+    private static final int HEIGHT = GraphPanel.SIZE;
+    private static final int PADDING = 5;
 
     private final Font label, data;
 
@@ -40,35 +41,49 @@ public class StatusPanel extends JPanel {
         g.clearRect(0, 0, getWidth(), getHeight());
 
         g.setColor(Color.darkGray);
-        g.drawRect(0, 0, getWidth() - 1, getHeight() - 1);
+        g.drawLine(0, 0, 0, getHeight() - 1);
 
         g.setFont(label);
         FontMetrics fm = g.getFontMetrics();
         int height = fm.getHeight();
 
-        g.drawString("Sweep Line Status:", LEFT_PADDING, height);
-        g.drawString("Events:", LEFT_PADDING, height * 2);
-        g.drawString("Intersections:", LEFT_PADDING, height * 3);
+        g.setColor(Color.lightGray);
+        g.drawLine(PADDING + 26, 0, PADDING + 26, getHeight());
+        g.drawLine(PADDING + 86, 0, PADDING + 86, getHeight());
+        g.drawLine(0, PADDING + height + 5, getWidth(), PADDING + height  + 5);
+
+        g.setColor(Color.black);
+        g.drawString("SLS", PADDING, PADDING + height);
+        g.drawString("Events", PADDING + 35, PADDING + height);
+        g.drawString("Intersections", PADDING + 95, PADDING + height);
+
 
         g.setFont(data);
 
-        int width = fm.stringWidth("Sweep Line Status:") + 5;
+        // Sweep Line Status
         for (int i = sweepLineStatus.size() - 1; i >= 0; i--) {
             g.drawString(
-                    sweepLineStatus.get(i).getId() + (i == 0 ? "" : ","),
-                    LEFT_PADDING + width + 15 * (sweepLineStatus.size() - 1 - i),
-                    height);
+                    String.format("%2d", sweepLineStatus.get(i).getId()),
+                    PADDING + 5,
+                    PADDING + 5 + height * (sweepLineStatus.size() + 1 - i)
+            );
         }
 
-        width = fm.stringWidth("Events:") + 5;
         events.sort(new EventComparator());
         for (int i = 0; i < events.size(); i++) {
-            g.drawString(String.format("%.2f", events.get(i).getPoint().getX()), LEFT_PADDING + width + 50 * i, height * 2);
+            g.drawString(
+                    String.format("%5.2f", events.get(i).getPoint().getX()),
+                    PADDING + 35,
+                    PADDING + 5 + height * (i + 2)
+            );
         }
 
-        width = fm.stringWidth("Intersections:") + 5;
         for (int i = 0; i < intersections.size(); i++) {
-            g.drawString(intersections.get(i).toString(), LEFT_PADDING + width + 100 * i, height * 3);
+            g.drawString(
+                    intersections.get(i).toString(),
+                    PADDING + 95,
+                    PADDING + 5 + height * (i + 2)
+            );
         }
     }
 
@@ -80,7 +95,7 @@ public class StatusPanel extends JPanel {
      * @param events        list of events
      * @param intersections list of intersections
      */
-    public void update(NavigableSet<Segment> segments, java.util.Queue<Event> events, List<PointF> intersections) {
+    void update(NavigableSet<Segment> segments, Queue<Event> events, List<PointF> intersections) {
 
         sweepLineStatus.clear();
         sweepLineStatus.addAll(segments);

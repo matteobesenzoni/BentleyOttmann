@@ -42,7 +42,7 @@ public class Window extends JFrame {
         statusPanel = new StatusPanel();
 
         add(graphPanel, BorderLayout.CENTER);
-        add(statusPanel, BorderLayout.SOUTH);
+        add(statusPanel, BorderLayout.EAST);
 
         pack();
         setLocationRelativeTo(null);

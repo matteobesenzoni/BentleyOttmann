@@ -29,6 +29,6 @@ public class PointF {
     }
 
     public String toString() {
-        return "(" + String.format("%.2f", x) + ", " + String.format("%.2f", y) + ")";
+        return "(" + String.format("%5.2f", x) + ", " + String.format("%5.2f", y) + ")";
     }
 }
