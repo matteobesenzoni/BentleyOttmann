@@ -1,8 +1,0 @@
-<component name="ArtifactManager">
-  <artifact type="jar" name="BentleyOttmann">
-    <output-path>$PROJECT_DIR$/out/artifacts/BentleyOttmann</output-path>
-    <root id="archive" name="BentleyOttmann.jar">
-      <element id="module-output" name="BentleyOttmann" />
-    </root>
-  </artifact>
-</component>
