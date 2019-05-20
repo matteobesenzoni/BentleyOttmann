@@ -1,0 +1,22 @@
+
+Usage instructions:
+
+    1) Open the system terminal and navigate to the directory containing the <src> folder.
+       Create the folder <build> if it doesn't exist already.
+
+    2) Compile the files:
+        javac -d build src/core/*.java src/launcher/*.java src/parser/*.java src/gui/*.java src/core/comparators/*.java src/core/types/*.java
+        
+    3) Enter the build folder:
+        cd build
+
+    4) Create the executable jar:
+        jar cfm <jar name>.jar launcher.Main core/*.class core/types/*.class core/comparators/*.class gui/*.class parser/*.class launcher/*.class
+        
+    5) Use the executable jar:
+        java -jar <jar name>.jar <input file> [-v]
+    
+    
+Space and time complexity analysis:
+    
+    
