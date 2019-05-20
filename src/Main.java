@@ -1,5 +1,3 @@
-package launcher;
-
 import core.BentleyOttmann;
 import gui.Window;
 import parser.InputData;
