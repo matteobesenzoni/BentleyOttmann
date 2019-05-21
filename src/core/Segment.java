@@ -1,5 +1,13 @@
 package core;
 
+/**
+ * Segment class defined by id, a b c
+ * (y = ax^2 + bx + c) and range as [t1, t2].
+ *
+ * @author Matteo Besenzoni
+ * @version 1.0
+ * @since 15.05.2019
+ */
 public class Segment {
 
     /* Segment id */
@@ -27,11 +35,11 @@ public class Segment {
         return a;
     }
 
-    public float getB() {
+    float getB() {
         return b;
     }
 
-    public float getC() {
+    float getC() {
         return c;
     }
 
@@ -51,7 +59,7 @@ public class Segment {
         return y;
     }
 
-    public void setY(float y) {
+    void setY(float y) {
         this.y = y;
     }
 
@@ -75,7 +83,7 @@ public class Segment {
      * @param x x coordinate
      * @return y coordinate
      */
-    public float update(float x) {
+    float update(float x) {
         y = calc(x);
         return y;
     }

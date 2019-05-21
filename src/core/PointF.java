@@ -1,7 +1,11 @@
 package core;
 
 /**
- * 2D coordinate with floating point values
+ * 2D coordinate with floating point values.
+ *
+ * @author Matteo Besenzoni
+ * @version 1.0
+ * @since 15.05.2019
  */
 public class PointF {
 
@@ -16,16 +20,8 @@ public class PointF {
         return x;
     }
 
-    public void setX(float x) {
-        this.x = x;
-    }
-
     public float getY() {
         return y;
-    }
-
-    public void setY(float y) {
-        this.y = y;
     }
 
     public String toString() {

@@ -1,5 +1,12 @@
 package core.types;
 
+/**
+ * InstructionType enumerator.
+ *
+ * @author Matteo Besenzoni
+ * @version 1.0
+ * @since 15.05.2019
+ */
 public enum InstructionType {
     STEP("step"), STEP_P("step -p"), STATUS("status"), RUN("run"), ERROR("error");
 

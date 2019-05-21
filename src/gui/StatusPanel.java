@@ -12,6 +12,13 @@ import java.util.List;
 import java.util.NavigableSet;
 import java.util.Queue;
 
+/**
+ * Panel showing the data structures status.
+ *
+ * @author Matteo Besenzoni
+ * @version 1.0
+ * @since 15.05.2019
+ */
 public class StatusPanel extends JPanel {
 
     private static final int WIDTH = 200;
@@ -50,7 +57,7 @@ public class StatusPanel extends JPanel {
         g.setColor(Color.lightGray);
         g.drawLine(PADDING + 26, 0, PADDING + 26, getHeight());
         g.drawLine(PADDING + 86, 0, PADDING + 86, getHeight());
-        g.drawLine(0, PADDING + height + 5, getWidth(), PADDING + height  + 5);
+        g.drawLine(0, PADDING + height + 5, getWidth(), PADDING + height + 5);
 
         g.setColor(Color.black);
         g.drawString("SLS", PADDING, PADDING + height);

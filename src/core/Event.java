@@ -6,6 +6,15 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ * Event class defined by type and location.
+ * Contains a list of segments
+ * related to this event.
+ *
+ * @author Matteo Besenzoni
+ * @version 1.0
+ * @since 15.05.2019
+ */
 public class Event {
 
     /* Segments related to this event */

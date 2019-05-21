@@ -4,6 +4,15 @@ import parser.InputData;
 import parser.Instruction;
 import parser.Parser;
 
+/**
+ * Main class. Reads arguments and
+ * handles the algorithm execution
+ * and GUI.
+ *
+ * @author Matteo Besenzoni
+ * @version 1.0
+ * @since 15.05.2019
+ */
 public class Main {
 
     public static void main(String[] args) {

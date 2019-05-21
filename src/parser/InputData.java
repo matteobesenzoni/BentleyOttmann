@@ -5,21 +5,29 @@ import core.Segment;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Class representing the contents of an
+ * input data file.
+ *
+ * @author Matteo Besenzoni
+ * @version 1.0
+ * @since 15.05.2019
+ */
 public class InputData {
 
     private final List<Segment> segments;
     private final List<Instruction> instructions;
 
-    public InputData() {
+    InputData() {
         this.segments = new ArrayList<>();
         this.instructions = new ArrayList<>();
     }
 
-    public void addSegment(Segment s) {
+    void addSegment(Segment s) {
         segments.add(s);
     }
 
-    public void addInstruction(Instruction i) {
+    void addInstruction(Instruction i) {
         instructions.add(i);
     }
 

@@ -6,6 +6,10 @@ import java.util.Comparator;
 
 /**
  * Events comparator based on the events x coordinate.
+ *
+ * @author Matteo Besenzoni
+ * @version 1.0
+ * @since 15.05.2019
  */
 public class EventComparator implements Comparator<Event> {
 

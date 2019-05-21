@@ -12,6 +12,13 @@ import java.util.List;
 import java.util.NavigableSet;
 import java.util.Queue;
 
+/**
+ * Panel in which the segments are drawn.
+ *
+ * @author Matteo Besenzoni
+ * @version 1.0
+ * @since 15.05.2019
+ */
 public class GraphPanel extends JPanel {
 
     /* Panel width and height */
@@ -219,7 +226,7 @@ public class GraphPanel extends JPanel {
      * @param events        list of events
      * @param intersections list of intersections
      */
-    public void update(float x, NavigableSet<Segment> segments, Queue<Event> events, List<PointF> intersections) {
+    void update(float x, NavigableSet<Segment> segments, Queue<Event> events, List<PointF> intersections) {
         sweepLine = x;
 
         activeSegments.clear();

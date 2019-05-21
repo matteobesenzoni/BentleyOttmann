@@ -2,6 +2,14 @@ package parser;
 
 import core.types.InstructionType;
 
+/**
+ * Class representing a single input data
+ * instruction.
+ *
+ * @author Matteo Besenzoni
+ * @version 1.0
+ * @since 15.05.2019
+ */
 public class Instruction {
 
     private final InstructionType type;
@@ -10,7 +18,7 @@ public class Instruction {
         this.type = type;
     }
 
-    public static Instruction parse(String i) {
+    static Instruction parse(String i) {
         InstructionType type = InstructionType.parse(i);
         if (type == InstructionType.ERROR)
             return null;

@@ -12,6 +12,13 @@ import java.util.List;
 import java.util.NavigableSet;
 import java.util.Queue;
 
+/**
+ * Main window.
+ *
+ * @author Matteo Besenzoni
+ * @version 1.0
+ * @since 15.05.2019
+ */
 public class Window extends JFrame {
 
     private final GraphPanel graphPanel;

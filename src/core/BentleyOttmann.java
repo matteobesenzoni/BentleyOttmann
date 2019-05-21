@@ -10,6 +10,14 @@ import java.util.*;
 
 /**
  * Bentley-Ottmann algorithm for segments intersection.
+ * Supports linear and quadratic functions as segments.
+ * <p>
+ * Partially based on the BentleyOttmann implementation
+ * found at https://github.com/valenpe7/bentley-ottmann
+ *
+ * @author Matteo Besenzoni
+ * @version 1.0
+ * @since 15.05.2019
  */
 public class BentleyOttmann {
 
@@ -230,11 +238,8 @@ public class BentleyOttmann {
      * @param x sweep line coordinate
      */
     private void updateSegments(float x) {
-        // Called while already cycling through <segments>,
-        // must use an iterator to avoid concurrency exceptions
-        Iterator<Segment> it = segments.iterator();
-        while (it.hasNext()) {
-            it.next().update(x);
+        for (Segment segment : segments) {
+            segment.update(x);
         }
     }
 
@@ -242,12 +247,12 @@ public class BentleyOttmann {
      * Checks for intersections between the two given segments
      * based the sweep line coordinate x.
      *
-     * @param s1 First segment
-     * @param s2 Second segment
-     * @param x  sweep line coordinate
+     * @param s1        First segment
+     * @param s2        Second segment
+     * @param sweepLine sweep line coordinate
      * @return number of intersections found
      */
-    private int checkIntersection(Segment s1, Segment s2, float x) {
+    private int checkIntersection(Segment s1, Segment s2, float sweepLine) {
 
         float a1 = s1.getA();
         float b1 = s1.getB();
@@ -260,10 +265,10 @@ public class BentleyOttmann {
         // a1 and a2 are 0 or equal
         if (a1 == 0.0f && a2 == 0.0f || Float.compare(a1, a2) == 0) {
             if (Float.compare(b1, b2) == 0)
-                return 0; // omitting overlapping segments
-            float i = (c2 - c1) / (b1 - b2);
-            if (i >= x && i >= s1.getT1() && i <= s1.getT2() && i >= s2.getT1() && i <= s2.getT2()) {
-                events.add(new Event(EventType.INTERSECTION, new PointF(i, s1.calc(i)), s1, s2));
+                return 0; // omitting parallel overlapping segments
+            float x = (c2 - c1) / (b1 - b2);
+            if (x > sweepLine && x >= s1.getT1() && x <= s1.getT2() && x >= s2.getT1() && x <= s2.getT2()) {
+                events.add(new Event(EventType.INTERSECTION, new PointF(x, s1.calc(x)), s1, s2));
                 //System.out.println("+ EVENT at " + i + "(" + s1.getId() + ", " + s2.getId() + ")");
                 return 1;
             }
@@ -291,13 +296,13 @@ public class BentleyOttmann {
             float x1 = (-b - (float) Math.sqrt(d)) / (2.0f * a);
             float x2 = (-b + (float) Math.sqrt(d)) / (2.0f * a);
 
-            if (x1 >= x && x1 <= s1.getT2() && x1 <= s2.getT2()) {
+            if (x1 >= sweepLine && x1 <= s1.getT2() && x1 <= s2.getT2()) {
                 events.add(new Event(EventType.INTERSECTION, new PointF(x1, s1.calc(x1)), s1, s2));
                 n_int++;
                 //System.out.println("+ EVENT at " + x1 + "(" + s1.getId() + ", " + s2.getId() + ")");
             }
 
-            if (Float.compare(x1, x2) != 0 && x2 >= x && x2 <= s1.getT2() && x2 <= s2.getT2()) {
+            if (Float.compare(x1, x2) != 0 && x2 >= sweepLine && x2 <= s1.getT2() && x2 <= s2.getT2()) {
                 events.add(new Event(EventType.INTERSECTION, new PointF(x2, s1.calc(x2)), s1, s2));
                 n_int++;
                 //System.out.println("+ EVENT at " + x2 + "(" + s1.getId() + ", " + s2.getId() + ")");
