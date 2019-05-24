@@ -35,8 +35,14 @@ Introduction:
 
 Usage instructions:
 
+    Requirements:
+        Run:
+            Java SE Runtime Environment 8 or higher
+        Compile:
+            Java SE Development Kit 8 or higher
+
     1) Open the system terminal and navigate to the directory containing the <src> folder.
-       Create the folder <build> if it doesn't exist already.
+       Create the folder <build> if it doesn't already  exist.
 
     2) Compile the files:
         javac -d build -cp src src/*.java
