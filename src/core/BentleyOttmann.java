@@ -24,7 +24,7 @@ public class BentleyOttmann {
     /* Priority queue of future events */
     private final Queue<Event> events;
     /* Balanced binary tree of segments intersecting the sweep line */
-    private final NavigableSet<Segment> segments;
+    private final NavigableSet<Segment> sweepLine;
     /* List of intersections found */
     private final List<PointF> intersections;
 
@@ -47,7 +47,7 @@ public class BentleyOttmann {
         startingSegments = data.getSegments().size();
 
         events = new PriorityQueue<>(new EventComparator());
-        segments = new TreeSet<>(new SegmentComparator());
+        sweepLine = new TreeSet<>(new SegmentComparator());
         intersections = new ArrayList<>();
 
         for (Segment s : data.getSegments()) {
@@ -122,18 +122,17 @@ public class BentleyOttmann {
         Event e = events.poll();
         x = e.getPoint().getX();
         Segment s = e.getSegments().get(0);
-        Segment lower = segments.lower(s);
-        Segment higher = segments.higher(s);
+        Segment lower, higher;
 
         int n_int = 0;
 
         switch (e.getType()) {
             case START:
                 updateSegments(x);
-                segments.add(s);
+                sweepLine.add(s);
 
-                lower = segments.lower(s);
-                higher = segments.higher(s);
+                lower = sweepLine.lower(s);
+                higher = sweepLine.higher(s);
 
                 if (lower != null)
                     n_int += checkIntersection(lower, s, x);
@@ -143,9 +142,11 @@ public class BentleyOttmann {
                     removeFutureEvent(lower, higher);
                 break;
             case END:
+                lower = sweepLine.lower(s);
+                higher = sweepLine.higher(s);
                 if (lower != null && higher != null)
                     n_int += checkIntersection(lower, higher, x);
-                segments.remove(s);
+                sweepLine.remove(s);
                 break;
             case INTERSECTION:
                 if (e.getSegments().size() == 2) {
@@ -153,8 +154,8 @@ public class BentleyOttmann {
                     Segment s2 = e.getSegments().get(1);
                     swap(s1, s2);
                     if (s1.getY() < s2.getY()) {
-                        lower = segments.lower(s2);
-                        higher = segments.higher(s1);
+                        lower = sweepLine.lower(s2);
+                        higher = sweepLine.higher(s1);
                         if (lower != null) {
                             n_int += checkIntersection(lower, s2, x);
                             removeFutureEvent(lower, s1);
@@ -164,8 +165,8 @@ public class BentleyOttmann {
                             removeFutureEvent(higher, s2);
                         }
                     } else {
-                        lower = segments.lower(s1);
-                        higher = segments.higher(s2);
+                        lower = sweepLine.lower(s1);
+                        higher = sweepLine.higher(s2);
                         if (lower != null) {
                             n_int += checkIntersection(lower, s1, x);
                             removeFutureEvent(lower, s2);
@@ -210,8 +211,8 @@ public class BentleyOttmann {
     private void status() {
 
         System.out.print("status: ");
-        System.out.print(segments.size() + ":");
-        for (Segment s : segments.descendingSet()) {
+        System.out.print(sweepLine.size() + ":");
+        for (Segment s : sweepLine.descendingSet()) {
             System.out.print(" " + s.getId());
         }
         System.out.println();
@@ -238,7 +239,7 @@ public class BentleyOttmann {
      * @param x sweep line coordinate
      */
     private void updateSegments(float x) {
-        for (Segment segment : segments) {
+        for (Segment segment : sweepLine) {
             segment.update(x);
         }
     }
@@ -247,12 +248,12 @@ public class BentleyOttmann {
      * Checks for intersections between the two given segments
      * based the sweep line coordinate x.
      *
-     * @param s1        First segment
-     * @param s2        Second segment
-     * @param sweepLine sweep line coordinate
+     * @param s1 First segment
+     * @param s2 Second segment
+     * @param x  sweep line coordinate
      * @return number of intersections found
      */
-    private int checkIntersection(Segment s1, Segment s2, float sweepLine) {
+    private int checkIntersection(Segment s1, Segment s2, float x) {
 
         float a1 = s1.getA();
         float b1 = s1.getB();
@@ -266,9 +267,9 @@ public class BentleyOttmann {
         if (a1 == 0.0f && a2 == 0.0f || Float.compare(a1, a2) == 0) {
             if (Float.compare(b1, b2) == 0)
                 return 0; // omitting parallel overlapping segments
-            float x = (c2 - c1) / (b1 - b2);
-            if (x > sweepLine && x >= s1.getT1() && x <= s1.getT2() && x >= s2.getT1() && x <= s2.getT2()) {
-                events.add(new Event(EventType.INTERSECTION, new PointF(x, s1.calc(x)), s1, s2));
+            float intersection = (c2 - c1) / (b1 - b2);
+            if (intersection > x && intersection >= s1.getT1() && intersection <= s1.getT2() && intersection >= s2.getT1() && intersection <= s2.getT2()) {
+                events.add(new Event(EventType.INTERSECTION, new PointF(intersection, s1.calc(intersection)), s1, s2));
                 //System.out.println("+ EVENT at " + i + "(" + s1.getId() + ", " + s2.getId() + ")");
                 return 1;
             }
@@ -296,13 +297,13 @@ public class BentleyOttmann {
             float x1 = (-b - (float) Math.sqrt(d)) / (2.0f * a);
             float x2 = (-b + (float) Math.sqrt(d)) / (2.0f * a);
 
-            if (x1 >= sweepLine && x1 <= s1.getT2() && x1 <= s2.getT2()) {
+            if (x1 >= x && x1 <= s1.getT2() && x1 <= s2.getT2()) {
                 events.add(new Event(EventType.INTERSECTION, new PointF(x1, s1.calc(x1)), s1, s2));
                 n_int++;
                 //System.out.println("+ EVENT at " + x1 + "(" + s1.getId() + ", " + s2.getId() + ")");
             }
 
-            if (Float.compare(x1, x2) != 0 && x2 >= sweepLine && x2 <= s1.getT2() && x2 <= s2.getT2()) {
+            if (Float.compare(x1, x2) != 0 && x2 >= x && x2 <= s1.getT2() && x2 <= s2.getT2()) {
                 events.add(new Event(EventType.INTERSECTION, new PointF(x2, s1.calc(x2)), s1, s2));
                 n_int++;
                 //System.out.println("+ EVENT at " + x2 + "(" + s1.getId() + ", " + s2.getId() + ")");
@@ -339,13 +340,13 @@ public class BentleyOttmann {
      * @param s2 Second segment
      */
     private void swap(Segment s1, Segment s2) {
-        segments.remove(s1);
-        segments.remove(s2);
+        sweepLine.remove(s1);
+        sweepLine.remove(s2);
         float y = s1.getY();
         s1.setY(s2.getY());
         s2.setY(y);
-        segments.add(s1);
-        segments.add(s2);
+        sweepLine.add(s1);
+        sweepLine.add(s2);
     }
 
     /**
@@ -368,12 +369,12 @@ public class BentleyOttmann {
     }
 
     /**
-     * Returns the active segments.
+     * Returns the sweepLine.
      *
-     * @return active segments
+     * @return sweepLine
      */
-    public NavigableSet<Segment> getSegments() {
-        return segments;
+    public NavigableSet<Segment> getSweepLine() {
+        return sweepLine;
     }
 
     /**

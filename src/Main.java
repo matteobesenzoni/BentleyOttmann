@@ -36,12 +36,12 @@ public class Main {
 
         // parse and execute instructions
         for (Instruction i : data.getInstructions()) {
-            if (gui) w.update(bo.getX(), bo.getSegments(), bo.getEvents(), bo.getIntersections());
+            if (gui) w.update(bo.getX(), bo.getSweepLine(), bo.getEvents(), bo.getIntersections());
             bo.executeInstruction(i);
         }
 
         // show final state
-        if (gui) w.update(bo.getX(), bo.getSegments(), bo.getEvents(), bo.getIntersections());
+        if (gui) w.update(bo.getX(), bo.getSweepLine(), bo.getEvents(), bo.getIntersections());
 
         System.exit(0);
     }

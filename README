@@ -1,4 +1,38 @@
 
+Introduction:
+
+    This is an modified implementation of the Bentley–Ottmann sweep line algorithm, for listing all crossings in a set
+    of line segments, with support for both linear and quadratic functions as input segments.
+    The algorithm expects the input data to follow the General Position notion:
+
+        No two line segment endpoints or crossings have the same x-coordinate
+        No line segment endpoint lies upon another line segment
+        No three line segments intersect at a single point
+
+    The algorithm code is partially based on the implementation found at:
+        https://github.com/valenpe7/bentley-ottmann
+    The software expects an input file with the following structure:
+
+        n                           # of segments in the following lines
+        a1 b1 c1 t1 u1              first segment (y = ax^2 + bx +c, t <= x <= u)
+        a2 b2 c2 t2 u2              second segment
+        ...
+        i1                          first instruction
+        i2                          second instruction
+        ...
+
+    The instructions are:
+
+        step                        executes the next step (event) of the algorithm
+        step -p                     executes the step instruction and prints some information
+        status                      prints the status structure
+        run                         executes the remaining algorithm steps until completion and print the results
+
+    This software contains a graphical interactive visualizer which can be enabled by adding -v when launching the
+    application (see instructions below). By pressing SPACE it processed the next instruction and waits for a new
+    keyboard input, by pressing R it processes all instructions and by pressing ESCAPE it quits the application.
+
+
 Usage instructions:
 
     1) Open the system terminal and navigate to the directory containing the <src> folder.
@@ -34,8 +68,9 @@ Code analysis:
             o lower(E e)        O(log(n))
             o higher(E e)       O(log(n))
 
+          Note:
           Based on the fact that the operation remove(E e) takes log(n) time and it must navigate the tree to find the
-          element to remove, with the same logic instead of removing such element it can return it's neighbours values
+          element to remove, with the same logic instead of removing such element it can return its neighbours values
           in O(1) time, making lower(E e) and higher(E e) also take log(n) time.
 
           The methods used for debugging and to display data are:
@@ -53,9 +88,119 @@ Code analysis:
            retrieval methods (peek, element, and size)"
 
            The methods used in the algorithm core implementation are:
+             o isEmpty()        O(1)
              o add(E e)         O(log(n))
              o poll()           O(log(n))
-             o isEmpty()        O(1)
              o iterator()       O(n)
              o remove(E e)      O(n)
 
+        Intersections: ArrayList<E>
+          The only function used for the intersections is add(E e), which takes O(1) time. If too many elements are
+          added during execution, the ArrayList will grow internally in O(n), but this happens only O(log(n)) times.
+
+    - Code time complexity (K is the number of intersection events generated at runtime):
+
+        EVENTS = priority queue representing future events
+        SEGMENTS = balanced binary tree representing the segments intersecting the sweep line
+
+        function main() {
+          init()                                                                  O(n log(n))
+          until EVENTS is empty {                                                 O(n + k)
+            step()                                                                  O(log(n))
+          }
+        }
+
+        function init() {
+          for each segment S in the input data {                                  O(n)
+            create 2 new events E1 and E2 for S endpoints                           O(1)
+            add E1 and E2 to EVENTS                                                 O(log(n))
+          }
+        }
+
+        function step() {
+          E = next event                                                          O(log(n))
+          S = first segment of E                                                  O(1)
+          X = sweep line x coordinate                                             O(1)
+
+          switch (E event type) {
+          case START:
+            update SEGMENTS based on X                                            O(n) /!\
+            add S to SEGMENTS                                                     O(log(n))
+            retrieve S neighbours (L/H)                                           O(log(n))
+            if L/H exist {
+              checkIntersections(S, L/H)                                            O(log(n)
+            }
+            if both L and H exist {
+              remove L/H future intersections                                       O(k)
+            }
+
+          case END:
+            retrieve S neighbours (L/H)                                           O(log(n))
+            if both L and H exist {
+              remove L/H future intersections                                       O(k)
+            }
+            remove S from SEGMENTS                                                O(log(n))
+
+          case INTERSECTION:
+            if # segments in the event is 2 {
+              retrieve event segments S1 and S2                                    O(log(n))
+              swap S1 and S2 in SEGMENTS                                           O(log(n))
+              if S1 comes before S2 {
+                retrieve S2 lower neighbour L                                       O(log(n))
+                retrieve S1 higher neighbour H                                      O(log(n))
+                if L exists {
+                  checkIntersections(S2, L)                                           O(log(n))
+                  remove S1/L future intersections                                    O(k)
+                }
+                if H exists {
+                  checkIntersections(S1, H)                                           O(log(n))
+                  remove S2/H future intersections                                    O(k)
+                }
+              } else {
+                retrieve S1 lower neighbour L                                       O(log(n))
+                retrieve S2 higher neighbour H                                      O(log(n))
+                if L exists {
+                  checkIntersections(S1, L)                                           O(log(n))
+                  remove S2/L future intersections                                    O(k)
+                }
+                if H exists {
+                  checkIntersections(S2, H)                                           O(log(n))
+                  remove S1/H future intersections                                    O(k)
+                }
+              }
+            } else {
+              handle multi-event (not implemented)
+            }
+          }
+        }
+
+    - Resulting time complexity
+
+        The algorithm processes a sequence of 2n+k elements. Each event is processed by a constant number of operations
+        in the binary search tree and the events queue. Since the events are composed by twice the number of segments
+        plus intersections between (only) adjacent segments, the event queue never contains more than 3n events.
+        As seen above, all operations take O(log(n)), hence the total time for the algorithm is O((n+k)log(n)).
+
+    - Space complexity
+
+        Each of the input segments corresponds to exactly one node in the binary search tree, and as stated above the
+        event queue contains at most 3n events. The space complexity is therefore O(n+j), where j is the number of
+        intersections found. If the intersections don't need to be stored, the space complexity becomes O(n).
+
+
+Known issues:
+
+    1) Even tho excluded by General Position, an optional requirement for this project was to allow for
+    multiple segments to intersect at the same point. This implementation of the algorithm does not handle such
+    cases, and using input data with such characteristics can lead to generating infinite events and a never ending
+    loop.
+
+    2) When handling a START event, the sweep line status has to update all intersecting segments with the new event x
+    coordinate. This implementation does such operation in O(n) time, updating all segments one by one. This leads to
+    an overall time complexity of O(n^2).
+    To avoid this, it's possible to modify the data structures and comparator classes to update the segments during the
+    add() operation, which takes O(log(n)) time. Due to limited time during development, this part has been omitted.
+
+    3) The graphical visualizer has not been implemented with a "time complexity" mentality. It works and produces
+    good results, but the implementation can surely be optimized. The reason for this is because it was an optional
+    requirement, and again for a lack of time during development.

@@ -121,23 +121,28 @@ public class GraphPanel extends JPanel {
         g2.drawLine(PADDING + center.x, 0, PADDING + center.x, SIZE);
 
         // reference value
-        int v = (int) max / 2;
+        int v = (int) max;
         // reference value graphic width and height
         FontMetrics fm = g.getFontMetrics();
         int vWidth = fm.stringWidth(v + "");
         int vHeight = fm.getHeight();
 
-        // x reference value tick and string
-        g2.drawLine((int) (PADDING + center.x + v * scaling), PADDING + center.y, (int) (PADDING + center.x + v * scaling), PADDING + center.y + 10);
+        // x and y reference value ticks
+        for (int k = (int) -max; k <= (int) max; k++) {
+            if (k == 0)
+                continue;
+            g2.drawLine((int) (PADDING + center.x + k * scaling), PADDING + center.y, (int) (PADDING + center.x + k * scaling), PADDING + center.y + 10);
+            g2.drawLine(PADDING + center.x - 10, (int) (PADDING + center.y - k * scaling), PADDING + center.x, (int) (PADDING + center.y - k * scaling));
+        }
+        // x reference value string
         g2.drawString(v + "", (int) (PADDING + center.x + v * scaling) - vWidth / 2, PADDING + center.y + 10 + vHeight);
-        // y reference value /tick and string
-        g2.drawLine(PADDING + center.x - 10, (int) (PADDING + center.y - v * scaling), PADDING + center.x, (int) (PADDING + center.y - v * scaling));
+        // y reference value string
         g2.drawString(v + "", PADDING + center.x - 10 - 5 - vWidth, (int) (PADDING + center.y - v * scaling) + vHeight / 4);
 
         g2.setStroke(normal);
 
         // segments
-        g.setColor(Color.lightGray);
+        g.setColor(Color.black);
         for (Segment s : segments) {
             draw(g2, s);
         }
